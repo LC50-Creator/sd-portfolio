@@ -1,0 +1,4 @@
+a = int(input("What is the width of the rectangle?"))
+b = int(input("What is the height of the rectangle?"))
+area = a * b
+print(f"The total area of the rectangle is {area}")
