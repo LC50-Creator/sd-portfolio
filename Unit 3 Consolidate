@@ -1,0 +1,101 @@
+import math  # gives us math.pi
+ 
+ 
+def get_positive_number(prompt):
+    """Keep asking until the user enters a number greater than zero."""
+    while True:
+        raw = input(prompt).strip()  # read input, trim spaces
+        try:
+            value = float(raw)  # convert text to a number
+        except ValueError:
+            # not a number, e.g. "abc"
+            print(f"  '{raw}' isn't a number. Please try again.")
+            continue
+        if value <= 0:
+            # zero or negative sizes make no sense
+            print("  The value must be greater than zero.")
+            continue
+        return value  # valid number
+ 
+ 
+# --- Area formulas (one function per shape) ---
+ 
+def circle():
+    r = get_positive_number("Radius: ")
+    return math.pi * r ** 2  # PiRSquared
+ 
+ 
+def square():
+    s = get_positive_number("Side length: ")
+    return s ** 2  # sideSquared
+ 
+ 
+def rectangle():
+    w = get_positive_number("Width: ")
+    h = get_positive_number("Height: ")
+    return w * h  # width × height
+ 
+ 
+def triangle():
+    b = get_positive_number("Base: ")
+    h = get_positive_number("Height: ")
+    return 0.5 * b * h  # 0.5 × base × height
+ 
+ 
+def trapezoid():
+    a = get_positive_number("Top (parallel side a): ")
+    b = get_positive_number("Bottom (parallel side b): ")
+    h = get_positive_number("Height: ")
+    return 0.5 * (a + b) * h  # 0.5 × (a + b) × height
+ 
+ 
+def ellipse():
+    a = get_positive_number("Semi-major axis: ")
+    b = get_positive_number("Semi-minor axis: ")
+    return math.pi * a * b  # pi × a × b
+ 
+ 
+# Menu: key -> (display name, function)
+SHAPES = {
+    "1": ("Circle", circle),
+    "2": ("Square", square),
+    "3": ("Rectangle", rectangle),
+    "4": ("Triangle", triangle),
+    "5": ("Trapezoid", trapezoid),
+    "6": ("Ellipse", ellipse),
+}
+ 
+ 
+def show_menu():
+    """Print the list of shapes to choose from."""
+    print("\n=== Area Calculator ===")
+    for key, (name, _) in SHAPES.items():
+        print(f"  {key}. {name}")
+    print("  q. Quit")
+ 
+ 
+def main():
+    """Main loop: show menu, get choice, calculate, repeat."""
+    while True:
+        show_menu()
+        choice = input("Choose a shape: ").strip().lower()
+ 
+        # exit the program
+        if choice in ("q", "quit", "exit"):
+            print("Goodbye!")
+            break
+ 
+        # reject anything not on the menu
+        if choice not in SHAPES:
+            print("  Invalid choice. Pick a number from the menu.")
+            continue
+ 
+        name, calculate = SHAPES[choice]  # look up the chosen shape
+        print(f"\n-- {name} --")
+        area = calculate()  # ask for sizes and work out the area
+        print(f"Area of the {name.lower()}: {area:.2f} square units")  # 2 d.p.
+ 
+ 
+#Run
+if __name__ == "__main__":
+    main()
