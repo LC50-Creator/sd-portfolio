@@ -1,0 +1,39 @@
+a = 20
+b = 6
+ 
+print("Addition:", a + b)
+print("Subtraction:", a - b)
+print("Multiplication:", a * b)
+print("Division:", a / b)   # gives a decimal even though both are whole numbers
+ 
+ 
+# ----- Part 2: different data types -----
+age = 30            # int
+price = 19.99       # float
+name = "Lee"        # string
+is_student = True   # boolean
+ 
+print(type(age))
+print(type(price))
+print(type(name))
+print(type(is_student))
+ 
+# mixing an int and a float gives a float
+print(age + price)
+ 
+# you can't add a string and a number, so convert it first
+print("Age: " + str(age))
+ 
+ 
+# ----- Part 3: user input -----
+user_name = input("What is your name? ")
+num1 = input("Enter a number: ")
+num2 = input("Enter another number: ")
+ 
+# input always comes in as a string, so change them to numbers
+num1 = float(num1)
+num2 = float(num2)
+ 
+print("Hi", user_name)
+print("Your numbers added together make", num1 + num2)
+ 
