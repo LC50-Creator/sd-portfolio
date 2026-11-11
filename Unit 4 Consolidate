@@ -1,0 +1,92 @@
+import csv
+ 
+FILE_NAME = "inventory.csv"
+ 
+# each product name points to its quantity (int) and price (float)
+inventory = {}
+ 
+ 
+def load_inventory():
+    # try to read the saved file, if there isn't one yet just start empty
+    try:
+        with open(FILE_NAME, "r") as file:
+            reader = csv.reader(file)
+            next(reader)  # skip the header row
+            for row in reader:
+                name = row[0]
+                quantity = int(row[1])
+                price = float(row[2])
+                inventory[name] = {"quantity": quantity, "price": price}
+        print("Inventory loaded.")
+    except FileNotFoundError:
+        print("No saved inventory yet, starting fresh.")
+ 
+ 
+def save_inventory():
+    # "w" overwrites the file each time with the latest data
+    with open(FILE_NAME, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["name", "quantity", "price"])
+        for name, details in inventory.items():
+            writer.writerow([name, details["quantity"], details["price"]])
+    print("Inventory saved.")
+ 
+ 
+def add_product():
+    name = input("Product name: ")
+    quantity = int(input("Quantity: "))
+    price = float(input("Price: £"))
+    inventory[name] = {"quantity": quantity, "price": price}
+    print(name, "added.")
+ 
+ 
+def update_quantity():
+    name = input("Which product? ")
+    if name in inventory:
+        new_quantity = int(input("New quantity: "))
+        inventory[name]["quantity"] = new_quantity
+        print(name, "updated.")
+    else:
+        print("That product isn't in the inventory.")
+ 
+ 
+def display_inventory():
+    if len(inventory) == 0:
+        print("Inventory is empty.")
+        return
+ 
+    total_value = 0.0
+    print("\nName            Qty    Price")
+    for name, details in inventory.items():
+        quantity = details["quantity"]
+        price = details["price"]
+        print(f"{name:<15} {quantity:<6} £{price:.2f}")
+        total_value += quantity * price
+ 
+    in_stock = total_value > 0   # bool, just to show it off
+    print(f"Total stock value: £{total_value:.2f}")
+    print("Anything in stock?", in_stock)
+ 
+ 
+# main program - keep showing the menu until the user quits
+load_inventory()
+ 
+running = True
+while running:
+    print("\n1. Add product")
+    print("2. Update quantity")
+    print("3. Show inventory")
+    print("4. Save and quit")
+    choice = input("Choose an option: ")
+ 
+    if choice == "1":
+        add_product()
+    elif choice == "2":
+        update_quantity()
+    elif choice == "3":
+        display_inventory()
+    elif choice == "4":
+        save_inventory()
+        running = False
+    else:
+        print("Please pick 1-4.")
