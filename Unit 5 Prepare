@@ -1,0 +1,47 @@
+import math
+import random
+
+# can change these to make it harder
+LOWEST = 1
+HIGHEST = 100
+
+secret = random.randint(LOWEST, HIGHEST)  # randint includes 100 as well, checked this
+
+# worked out you can always get it in log2(range) guesses if you go halfway each time
+# ceil to round up since 6.64 guesses isn't a thing
+best_possible = math.ceil(math.log2(HIGHEST - LOWEST + 1))
+
+print(f"I'm thinking of a number between {LOWEST} and {HIGHEST}.")
+print(f"Play it smart and you'll never need more than {best_possible} guesses.\n")
+
+guesses = 0
+
+while True:
+    answer = input("Your guess: ")
+
+    # crashed when i typed a letter so added this
+    # doesn't count as a guess, just goes back round
+    if not answer.isdigit():
+        print("That's not a number, try again.")
+        continue
+
+    guess = int(answer)
+    guesses += 1
+
+    if guess < secret:
+        print("Too low.")
+    elif guess > secret:
+        print("Too high.")
+    else:
+        print(f"\nGot it! It was {secret}. You took {guesses} guesses.")
+        break
+
+    # random message every 3 goes - mostly wanted to try random.choice
+    if guesses % 3 == 0:
+        print(random.choice(["Keep going!", "You're getting there.", "Think halfway!"]))
+
+# compare to the halving method score
+if guesses <= best_possible:
+    print("That's as good as the halving method, nice one.")
+else:
+    print(f"That's {guesses - best_possible} more than the halving method would need.")
