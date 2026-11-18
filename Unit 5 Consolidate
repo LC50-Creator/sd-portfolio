@@ -1,0 +1,109 @@
+import random      # picks the sentence
+import time        # for timing how long you take
+import json        # saving/loading scores
+import os          # checking if the scores file exists yet
+import statistics  # average wpm
+import difflib     # compares what you typed to the sentence, for accuracy
+from datetime import date  # puts the date on each score
+
+SCORES_FILE = "scores.json"
+
+# add more here if you want, longer ones are harder
+SENTENCES = [
+    "The quick brown fox jumps over the lazy dog.",
+    "Python is easy to read but indentation matters.",
+    "Always comment the reason, not just what the code does.",
+    "A good programmer looks both ways before crossing a one way street.",
+    "Practice a little every day and it adds up.",
+]
+
+
+def load_scores():
+    # first time running there's no file, so just start with an empty list
+    if not os.path.exists(SCORES_FILE):
+        return []
+    with open(SCORES_FILE) as f:
+        return json.load(f)
+
+
+def save_scores(scores):
+    # indent=2 just makes the file readable if you open it
+    with open(SCORES_FILE, "w") as f:
+        json.dump(scores, f, indent=2)
+
+
+def work_out_wpm(typed, seconds):
+    # standard way of doing it is 1 word = 5 characters (spaces count)
+    # so it's fair whether the words are long or short
+    words = len(typed) / 5
+    minutes = seconds / 60
+    return round(words / minutes)
+
+
+def work_out_accuracy(typed, target):
+    # SequenceMatcher gives a score from 0 to 1 for how alike two strings are
+    # tried doing it letter by letter first but one missed letter threw the whole
+    # thing off, this handles that properly
+    ratio = difflib.SequenceMatcher(None, typed, target).ratio()
+    return round(ratio * 100)
+
+
+def play_round():
+    sentence = random.choice(SENTENCES)
+
+    print("\nType this as fast as you can:\n")
+    print("   " + sentence + "\n")
+    input("Press Enter when you're ready...")
+
+    # perf_counter is better than time.time() for timing stuff, it's more precise
+    start = time.perf_counter()
+    typed = input("> ")
+    seconds = time.perf_counter() - start
+
+    # if they just hit enter there's nothing to score, and it'd divide by 0 later
+    if not typed.strip():
+        print("You didn't type anything, that one doesn't count.")
+        return None
+
+    wpm = work_out_wpm(typed, seconds)
+    accuracy = work_out_accuracy(typed, sentence)
+    print(f"\n{seconds:.1f} seconds | {wpm} wpm | {accuracy}% accurate")
+
+    # dict so it saves nicely as json
+    return {"date": str(date.today()), "wpm": wpm, "accuracy": accuracy}
+
+
+def show_stats(scores):
+    # need at least one score or mean/max will error
+    if not scores:
+        return
+    all_wpm = [s["wpm"] for s in scores]
+    print(f"Games played: {len(scores)}")
+    print(f"Average: {statistics.mean(all_wpm):.0f} wpm | Best: {max(all_wpm)} wpm")
+
+
+def main():
+    scores = load_scores()
+    print("=== Typing Speed Test ===")
+    show_stats(scores)
+
+    # keep playing until they say no
+    while True:
+        result = play_round()
+        if result:
+            scores.append(result)
+            save_scores(scores)  # save after every round so nothing's lost if it crashes
+
+        again = input("\nGo again? (y/n): ").lower()
+        if again != "y":
+            break
+
+    print()
+    show_stats(scores)
+    print("Scores saved, see you next time.")
+
+
+# only runs the game if you run this file directly,
+# so someone else can import the functions without it starting
+if __name__ == "__main__":
+    main()
